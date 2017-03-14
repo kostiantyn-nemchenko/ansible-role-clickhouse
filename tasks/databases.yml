@@ -1,0 +1,22 @@
+---
+
+# file: clickhouse/tasks/databases.yml
+
+- name: Ensure ClickHouse is running
+  become: yes
+  service:
+    name: clickhouse-server
+    state: running
+
+- name: Make sure the ClickHouse database(s) is(are) present
+  uri:
+    url: "http://{{ clickhouse_host |default('localhost') }}:{{ clickhouse_port |default(8123) }}/"
+    method: POST
+    body: "CREATE DATABASE IF NOT EXISTS {{ item }}"
+    user: "{{ clickhouse_user |default('default') }}"
+    password: "{{ clickhouse_password |default('') }}"
+    force_basic_auth: yes
+    creates: "{{ clickhouse_data_dir }}/data/{{ item }}"
+  with_items:
+    - "{{ clickhouse_databases }}"
+

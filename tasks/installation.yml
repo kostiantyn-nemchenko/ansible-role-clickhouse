@@ -1,0 +1,39 @@
+---
+
+# file: clickhouse/tasks/installation.yml
+
+- name: Make sure the CA certificates are available
+  become: yes
+  apt:
+    pkg: ca-certificates
+    state: present
+
+- name: Add ClickHouse repository apt-key
+  become: yes
+  apt_key:
+    id: "{{ clickhouse_apt_key_id }}"
+    url: "{{ clickhouse_apt_key_url }}"
+    state: present
+
+- name: Add ClickHouse repository
+  become: yes
+  apt_repository:
+    repo: "{{ clickhouse_apt_repository }}"
+    state: present
+
+- name: Install ClickHouse packages
+  become: yes
+  apt:
+    name: "{{ item.pkg }}"
+    state: "{{ item.state }}"
+    update_cache: yes
+    cache_valid_time: "{{ apt_cache_valid_time |default(600) }}"
+  with_items:
+    - "{{ apt_clickhouse_packages }}"
+
+- name: Ensure ClickHouse is running
+  become: yes
+  service:
+    name: clickhouse-server
+    state: running
+

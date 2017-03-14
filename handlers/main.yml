@@ -1,0 +1,13 @@
+# file: clickhouse/handlers/main.yml
+
+- name: run clickhouse
+  service:
+    name: clickhouse-server
+    state: running
+    enabled: yes
+    pattern: /usr/bin/clickhouse-server
+
+- name: restart clickhouse
+  service:
+    name: clickhouse-server
+    state: restarted
