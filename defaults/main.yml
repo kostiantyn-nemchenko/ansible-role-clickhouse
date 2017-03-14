@@ -1,8 +1,14 @@
 # file: clickhouse/defaults/main.yml
 
-clickhouse_apt_key_id:      "E0C56BD4"
-clickhouse_apt_key_url:     "http://repo.yandex.ru/clickhouse/CLICKHOUSE-KEY.GPG"
-clickhouse_apt_repository:  "deb http://repo.yandex.ru/clickhouse/{{ ansible_distribution_release }} stable main"
+apt_clickhouse_key_id:      "E0C56BD4"
+apt_clickhouse_key_url:     "http://repo.yandex.ru/clickhouse/CLICKHOUSE-KEY.GPG"
+apt_clickhouse_repository:  "deb http://repo.yandex.ru/clickhouse/{{ ansible_distribution_release }} stable main"
+apt_cache_valid_time:       600
+apt_clickhouse_packages:
+  - { pkg: 'clickhouse-client',        state: 'latest' }
+  - { pkg: 'clickhouse-server-common', state: 'latest' }
+  - { pkg: 'clickhouse-server-base',   state: 'latest' }
+  - { pkg: 'clickhouse-compressor',    state: 'absent' }
 
 clickhouse_system_user:     "clickhouse"
 clickhouse_system_group:    "clickhouse"
@@ -15,11 +21,3 @@ clickhouse_data_dir:        "/var/lib/clickhouse"
 
 clickhouse_databases:       ['testdb']
 clickhouse_users:           []
-
-apt_cache_valid_time:       600
-apt_clickhouse_packages:
-  - { pkg: 'clickhouse-client',        state: 'latest' }
-  - { pkg: 'clickhouse-server-common', state: 'latest' }
-  - { pkg: 'clickhouse-server-base',   state: 'latest' }
-  - { pkg: 'clickhouse-compressor',    state: 'absent' }
-

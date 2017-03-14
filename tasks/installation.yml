@@ -9,13 +9,13 @@
 
 - name: Add ClickHouse repository apt-key
   apt_key:
-    id: "{{ clickhouse_apt_key_id }}"
-    url: "{{ clickhouse_apt_key_url }}"
+    id: "{{ apt_clickhouse_key_id }}"
+    url: "{{ apt_clickhouse_key_url }}"
     state: present
 
 - name: Add ClickHouse repository
   apt_repository:
-    repo: "{{ clickhouse_apt_repository }}"
+    repo: "{{ apt_clickhouse_repository }}"
     state: present
 
 - name: Install ClickHouse packages
