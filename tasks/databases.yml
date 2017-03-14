@@ -3,7 +3,6 @@
 # file: clickhouse/tasks/databases.yml
 
 - name: Ensure ClickHouse is running
-  become: yes
   service:
     name: clickhouse-server
     state: running
@@ -19,4 +18,3 @@
     creates: "{{ clickhouse_data_dir }}/data/{{ item }}"
   with_items:
     - "{{ clickhouse_databases }}"
-

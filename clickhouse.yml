@@ -1,4 +1,5 @@
 - hosts: clickhouse-servers
+  become: yes
   gather_facts: yes
   pre_tasks:
     - block:
