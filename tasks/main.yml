@@ -1,16 +1,25 @@
 ---
-
 # file: clickhouse/tasks/main.yml
 
-- include: installation.yml
+- import_tasks: installation.yml
   tags: [clickhouse, clickhouse-install]
 
-- include: configuration.yml
+- name: Ensure ClickHouse is running
+  service:
+    name: clickhouse-server
+    state: started
+  tags:
+    - clickhouse
+    - clickhouse-install
+    - clickhouse-configure
+    - clickhouse-users
+    - clickhouse-databases
+
+- import_tasks: configuration.yml
   tags: [clickhouse, clickhouse-configure]
 
-- include: users.yml
+- import_tasks: users.yml
   tags: [clickhouse, clickhouse-users]
 
-- include: databases.yml
+- import_tasks: databases.yml
   tags: [clickhouse, clickhouse-databases]
-

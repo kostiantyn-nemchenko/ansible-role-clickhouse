@@ -1,6 +1,4 @@
 ---
-
 # file: clickhouse/tasks/configuration.yml
 
 - debug: msg="Not implemented"
-

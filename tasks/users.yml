@@ -1,5 +1,13 @@
 ---
-
 # file: clickhouse/tasks/users.yml
 
-- debug: msg="Not implemented"
+- name: Manage ClickHouse users and privileges
+  template: 
+    src: users.xml.j2
+    dest: "{{ clickhouse_server_config_dir }}/users.xml"
+    owner: "{{ clickhouse_system_user }}"
+    group: "{{ clickhouse_system_group }}"
+    mode: 0644
+  when: clickhouse_profiles|length > 0 or clickhouse_users|length > 0 or clickhouse_quotas|length > 0
+  notify:
+    - Restart ClickHouse

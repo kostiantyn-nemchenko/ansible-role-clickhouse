@@ -1,13 +1,7 @@
 ---
-
 # file: clickhouse/tasks/databases.yml
 
-- name: Ensure ClickHouse is running
-  service:
-    name: clickhouse-server
-    state: running
-
-- name: Make sure the ClickHouse database(s) is(are) present
+- name: Manage ClickHouse databases
   uri:
     url: "http://{{ clickhouse_host |default('localhost') }}:{{ clickhouse_port |default(8123) }}/"
     method: POST

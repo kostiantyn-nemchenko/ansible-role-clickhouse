@@ -1,0 +1,56 @@
+#jinja2: lstrip_blocks:True
+<?xml version="1.0"?>
+<yandex>
+    <!-- Profiles of settings. -->
+    <profiles>
+    {% for profile in clickhouse_profiles %}
+        <{{ profile.name }}>
+        {% for key, value in profile.settings.items() %}
+            <{{ key }}>{{ value }}</{{ key }}>
+        {% endfor %}
+        </{{ profile.name }}>
+    {% endfor %}
+    </profiles>
+
+    <!-- Users and ACL. -->
+    <users>
+    {% for user in clickhouse_users %}
+        <{{ user.name }}>
+            <password>{{ user.password }}</password>
+            <networks>
+        {% for key, values in user.networks.items() %}
+            {% for value in values %}
+                <{{ key }}>{{ value }}</{{ key }}>
+            {% endfor %}
+        {% endfor %}
+            </networks>            
+            <profile>{{ user.profile }}</profile>
+            <quota>{{ user.quota }}</quota>
+        {% for database in user.allow_databases|default('') %}
+            <allow_databases>
+                <database>{{ database }}</database>
+            </allow_databases>
+        {% endfor %}
+        </{{ user.name }}>
+    {% endfor %}
+    </users>
+
+    <!-- Quotas. -->
+    <quotas>
+    {% for quota in clickhouse_quotas %}
+        <{{ quota.name }}>
+        {% for interval in quota.intervals %}
+            <interval>
+                <duration>{{ interval.duration }}</duration>
+
+                <queries>{{ interval.queries }}</queries>
+                <errors>{{ interval.errors }}</errors>
+                <result_rows>{{ interval.result_rows }}</result_rows>
+                <read_rows>{{ interval.read_rows }}</read_rows>
+                <execution_time>{{ interval.execution_time }}</execution_time>
+            </interval>
+        {% endfor %}
+        </{{ quota.name }}>
+    {% endfor %}
+    </quotas>    
+</yandex>

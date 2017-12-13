@@ -1,23 +1,60 @@
+---
 # file: clickhouse/defaults/main.yml
 
-apt_clickhouse_key_id:      "E0C56BD4"
-apt_clickhouse_key_url:     "http://repo.yandex.ru/clickhouse/CLICKHOUSE-KEY.GPG"
-apt_clickhouse_repository:  "deb http://repo.yandex.ru/clickhouse/{{ ansible_distribution_release }} stable main"
-apt_cache_valid_time:       600
-apt_clickhouse_packages:
-  - { pkg: 'clickhouse-client',        state: 'latest' }
-  - { pkg: 'clickhouse-server-common', state: 'latest' }
-  - { pkg: 'clickhouse-server-base',   state: 'latest' }
-  - { pkg: 'clickhouse-compressor',    state: 'absent' }
+clickhouse_apt_key_id: E0C56BD4
+clickhouse_apt_key_url: http://repo.yandex.ru/clickhouse/CLICKHOUSE-KEY.GPG
+clickhouse_apt_repository: "deb http://repo.yandex.ru/clickhouse/{{ ansible_distribution_release }} stable main"
+clickhouse_apt_packages:
+  - { pkg: "clickhouse-client",        state: "present" }
+  - { pkg: "clickhouse-server-common", state: "present" }
+  - { pkg: "clickhouse-server-base",   state: "present" }
+  - { pkg: "clickhouse-common-dbg",    state: "absent"  }
+  - { pkg: "clickhouse-compressor",    state: "absent"  }
 
-clickhouse_system_user:     "clickhouse"
-clickhouse_system_group:    "clickhouse"
+clickhouse_system_user:  clickhouse
+clickhouse_system_group: clickhouse
 
-clickhouse_host:            "localhost"
-clickhouse_port:            "8123"
-clickhouse_user:            "default"
-clickhouse_password:        ""
-clickhouse_data_dir:        "/var/lib/clickhouse"
+clickhouse_host: localhost
+clickhouse_port: 8123
+clickhouse_user: default
+clickhouse_password: ""
+clickhouse_server_config_dir: /etc/clickhouse-server
+clickhouse_data_dir: /var/lib/clickhouse
 
-clickhouse_databases:       ['testdb']
-clickhouse_users:           []
+clickhouse_databases: []
+
+clickhouse_profiles:
+  - name: default
+    settings:
+      max_memory_usage: 10000000000
+      use_uncompressed_cache: 0
+      load_balancing: random
+  - name: readonly
+    settings:
+      readonly: 1
+
+clickhouse_users:
+  - name: default
+    password: "" #TODO: Password could be specified in plaintext or in SHA256 (in hex format).
+    networks:
+      ip:
+        - ::/0
+      host: ""
+      host_regexp: ""
+    profile: default
+    quota: default
+    allow_databases: []
+  - name: readonly
+    password: ""
+    networks:
+      ip: 
+        - ::1
+        - 127.0.0.1
+    profile: readonly
+    quota: default
+    allow_databases: []
+
+clickhouse_quotas:
+  - name: default
+    intervals:
+      - { duration: 3600, queries: 0, errors: 0, result_rows: 0, read_rows: 0, execution_time: 0 }
