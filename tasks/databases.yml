@@ -10,5 +10,6 @@
     password: "{{ clickhouse_password |default('') }}"
     force_basic_auth: yes
     creates: "{{ clickhouse_data_dir }}/data/{{ item }}"
+  when: clickhouse_databases|length > 0
   with_items:
     - "{{ clickhouse_databases }}"
