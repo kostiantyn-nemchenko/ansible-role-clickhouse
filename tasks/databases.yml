@@ -5,11 +5,19 @@
   uri:
     url: "http://{{ clickhouse_host |default('localhost') }}:{{ clickhouse_port |default(8123) }}/"
     method: POST
-    body: "CREATE DATABASE IF NOT EXISTS {{ item }}"
+    body: |
+      {% if item.state |default('present') == 'absent' %}
+        DROP DATABASE IF EXISTS {{ item.name }}
+      {% else %}
+        CREATE DATABASE IF NOT EXISTS {{ item.name }}
+      {% endif %}
     user: "{{ clickhouse_user |default('default') }}"
     password: "{{ clickhouse_password |default('') }}"
     force_basic_auth: yes
-    creates: "{{ clickhouse_data_dir }}/data/{{ item }}"
-  when: clickhouse_databases|length > 0
+  when: clickhouse_databases |length > 0
   with_items:
     - "{{ clickhouse_databases }}"
+
+#TODO:
+#  1) Specify cluster for commands DROP DATABASE [IF EXISTS] db [ON CLUSTER cluster] / CREATE DATABASE [IF NOT EXISTS] db [ON CLUSTER cluster]
+#  2) Create <clickhouse-path>/flags/force_drop_table file before dropping if parameter max_table_size_to_drop != 0
