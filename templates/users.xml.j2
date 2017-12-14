@@ -23,14 +23,16 @@
                 <{{ key }}>{{ value }}</{{ key }}>
             {% endfor %}
         {% endfor %}
-            </networks>            
+            </networks>
             <profile>{{ user.profile }}</profile>
             <quota>{{ user.quota }}</quota>
-        {% for database in user.allow_databases|default('') %}
+        {% if user.allow_databases|default('')|length > 0 %}
             <allow_databases>
+            {% for database in user.allow_databases %}
                 <database>{{ database }}</database>
+            {% endfor %}
             </allow_databases>
-        {% endfor %}
+        {% endif %}
         </{{ user.name }}>
     {% endfor %}
     </users>
@@ -52,5 +54,5 @@
         {% endfor %}
         </{{ quota.name }}>
     {% endfor %}
-    </quotas>    
+    </quotas>
 </yandex>
