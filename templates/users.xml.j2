@@ -41,7 +41,7 @@
     <quotas>
     {% for quota in clickhouse_quotas %}
         <{{ quota.name }}>
-        {% for interval in quota.intervals %}
+        {% for interval in quota.interval %}
             <interval>
                 <duration>{{ interval.duration }}</duration>
 
