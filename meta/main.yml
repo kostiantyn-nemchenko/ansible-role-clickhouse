@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  author: Kostiantyn Nemchenko
+  description: An Ansible role which installs and configures ClickHouse - an open-source column-oriented database management system that allows generating analytical data reports in real time.
+  company:
+  license: MIT
+  min_ansible_version: 2.4.0.0
+  platforms:
+  - name: Ubuntu
+    versions:
+    - xenial
+    - trusty
+  galaxy_tags:
+  - clickhouse
+  - database
+  - analytics
+  - sql
+dependencies: []
