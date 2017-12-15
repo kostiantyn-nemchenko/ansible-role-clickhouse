@@ -15,13 +15,16 @@ clickhouse_system_user:  clickhouse
 clickhouse_system_group: clickhouse
 
 clickhouse_host: localhost
-clickhouse_port: 8123
-clickhouse_user: default
-clickhouse_password: ""
-clickhouse_server_config_dir: /etc/clickhouse-server
-clickhouse_data_dir: /var/lib/clickhouse
+clickhouse_default_user: default
+clickhouse_default_password: ""
+clickhouse_server_config_path: /etc/clickhouse-server
+clickhouse_log_dir: /var/log/clickhouse-server
 
 clickhouse_databases: []
+#  - { name: "example1", state: "absent"  }
+#  - { name: "example2", state: "present" }
+
+# USERS.XML
 
 clickhouse_profiles:
   - name: default
@@ -35,7 +38,7 @@ clickhouse_profiles:
 
 clickhouse_users:
   - name: default
-    password: "" #TODO: Password could be specified in plaintext or in SHA256 (in hex format).
+    password: ""
     networks:
       ip:
         - ::/0
@@ -47,7 +50,7 @@ clickhouse_users:
   - name: readonly
     password: ""
     networks:
-      ip: 
+      ip:
         - ::1
         - 127.0.0.1
     profile: readonly
@@ -56,5 +59,165 @@ clickhouse_users:
 
 clickhouse_quotas:
   - name: default
-    intervals:
+    interval:
       - { duration: 3600, queries: 0, errors: 0, result_rows: 0, read_rows: 0, execution_time: 0 }
+
+# CONFIG.XML
+
+clickhouse_logger:
+  level: trace
+  log: "{{ clickhouse_log_dir }}/clickhouse-server.log"
+  errorlog: "{{ clickhouse_log_dir }}/clickhouse-server.err.log"
+  size: 1000M
+  count: 10
+
+clickhouse_http_port: 8123
+clickhouse_tcp_port: 9000
+
+clickhouse_openssl: [] #TODO
+
+clickhouse_http_server_default_response: "" # <![CDATA[<html ng-app="SMI2"><head><base href="http://ui.tabix.io/"></head><body><div ui-view="" class="content-ui"></div><script src="http://loader.tabix.io/master.js"></script></body></html>]]>
+
+clickhouse_interserver_http_port: 9009
+clickhouse_interserver_http_host: "{{ ansible_fqdn }}"
+
+clickhouse_listen_host:
+  - ::1
+  - 127.0.0.1
+
+clickhouse_max_connections: 4096
+
+clickhouse_keep_alive_timeout: 3
+
+clickhouse_max_concurrent_queries: 100
+
+clickhouse_max_open_files: maximum
+
+clickhouse_uncompressed_cache_size: 8589934592
+
+clickhouse_mark_cache_size: 5368709120
+
+clickhouse_path: /var/lib/clickhouse/
+
+clickhouse_tmp_path: /var/lib/clickhouse/tmp/
+
+clickhouse_users_config: users.xml
+
+clickhouse_default_profile: default
+
+clickhouse_default_database: default
+
+clickhouse_timezone: UTC
+
+clickhouse_umask: "027"
+
+clickhouse_max_session_timeout: 3600
+
+clickhouse_default_session_timeout: 60
+    
+clickhouse_graphite: []
+#  - { host: localhost, port: 42000, timeout: 0.1, interval: 60, root_path: one_min, metrics: true, events: true, asynchronous_metrics: true  }
+#  - { host: localhost, port: 42000, timeout: 0.1, interval: 1,  root_path: one_sec, metrics: true, events: true, asynchronous_metrics: false }
+
+clickhouse_query_log: #[]
+  database: system
+  table: query_log
+  flush_interval_milliseconds: 7500
+
+clickhouse_part_log: []
+#  database: system
+#  table: part_log
+#  flush_interval_milliseconds: 7500
+
+clickhouse_internal_dictionaries:
+  reload_interval: 3600
+  path_to_regions_hierarchy_file: /opt/geo/regions_hierarchy.txt #TODO: copy file via Ansible
+  path_to_regions_names_files: /opt/geo/ #TODO: create dir via Ansible
+
+clickhouse_external_dictionaries:
+  config: "*_dictionary.xml" #TODO: copy files via Ansible
+  lazy_load: true
+
+clickhouse_compression: []
+#  incl: 
+#    name: clickhouse_compression
+#    optional: false
+#  case:
+#    - { min_part_size: 10000000000, min_part_size_ratio: 0.01, method: lz4  }
+#    - { min_part_size: 20000000000, min_part_size_ratio: 0.02, method: zstd }
+
+clickhouse_resharding:
+  task_queue_path: /clickhouse/task_queue
+
+clickhouse_distributed_ddl:
+  path: /clickhouse/task_queue/ddl
+
+clickhouse_merge_tree: []
+#  - name: max_bytes_to_merge_at_max_space_in_pool
+#    value: 161061273600 }
+#  - name: max_bytes_to_merge_at_min_space_in_pool
+#    value: 1048576
+#  - name: max_replicated_merges_in_queue
+#    value: 16
+#  - name: number_of_free_entries_in_pool_to_lower_max_size_of_merge
+#    value: 8
+#  - name: old_parts_lifetime
+#    value: 480
+#  - name: temporary_directories_lifetime
+#    value: 86400
+#  - name: parts_to_delay_insert
+#    value: 150
+#  - name: parts_to_throw_insert
+#    value: 300
+#  - name: max_delay_to_insert
+#    value: 1
+#  - name: replicated_deduplication_window
+#    value: 100
+#  - name: replicated_deduplication_window_seconds
+#    value: 604800
+#  - name: replicated_logs_to_keep
+#    value: 100
+#  - name: prefer_fetch_merged_part_time_threshold
+#    value: 3600
+#  - name: prefer_fetch_merged_part_size_threshold
+#    value: 10737418240
+#  - name: max_suspicious_broken_parts
+#    value: 10
+#  - name: max_files_to_modify_in_alter_columns
+#    value: 75
+#  - name: max_files_to_remove_in_alter_columns
+#    value: 50
+#  - name: replicated_max_ratio_of_wrong_parts
+#    value: 0.5
+#  - name: replicated_max_parallel_fetches
+#    value: 0
+#  - name: replicated_max_parallel_fetches_for_table
+#    value: 0
+#  - name: replicated_max_parallel_sends
+#    value: 0
+#  - name: replicated_max_parallel_sends_for_table
+#    value: 0
+#  - name: replicated_can_become_leader
+#    value: true
+#  - name: zookeeper_session_expiration_check_period
+#    value: 60
+#  - name: check_delay_period
+#    value: 60
+#  - name: cleanup_delay_period
+#    value: 30
+#  - name: min_relative_delay_to_yield_leadership
+#    value: 120
+#  - name: min_relative_delay_to_close
+#    value: 300
+#  - name: min_absolute_delay_to_close
+#    value: 0
+#  - name: enable_vertical_merge_algorithm
+#    value: 1
+#  - name: vertical_merge_algorithm_min_rows_to_activate
+#    value: 131072
+#  - name: vertical_merge_algorithm_min_columns_to_activate
+#    value: 11
+#  - name: compatibility_allow_sampling_expression_not_in_primary_key
+#    value: false
+
+clickhouse_max_table_size_to_drop: 50000000000

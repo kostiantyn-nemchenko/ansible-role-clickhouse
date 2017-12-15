@@ -1,4 +1,12 @@
 ---
 # file: clickhouse/tasks/configuration.yml
 
-- debug: msg="Not implemented"
+- name: Manage ClickHouse configuration
+  template: 
+    src: config.xml.j2
+    dest: "{{ clickhouse_server_config_path }}/config.xml"
+    owner: "{{ clickhouse_system_user }}"
+    group: "{{ clickhouse_system_group }}"
+    mode: 0644
+  notify:
+    - Restart ClickHouse

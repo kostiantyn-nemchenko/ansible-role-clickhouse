@@ -1,0 +1,333 @@
+#jinja2: lstrip_blocks:True
+<?xml version="1.0"?>
+<yandex>
+    <logger>
+        <level>{{ clickhouse_logger.level }}</level>
+        <log>{{ clickhouse_logger.log }}</log>
+        <errorlog>{{ clickhouse_logger.errorlog }}</errorlog>
+        <size>{{ clickhouse_logger.size }}</size>
+        <count>{{ clickhouse_logger.count }}</count>
+    </logger>
+
+    <http_port>{{ clickhouse_http_port }}</http_port>
+    <tcp_port>{{ clickhouse_tcp_port }}</tcp_port>
+
+    <!-- TODO -->
+    <!-- For HTTPS and SSL over native protocol. -->
+    <!--
+    <https_port>8443</https_port>
+    <tcp_ssl_port>9440</tcp_ssl_port>
+    -->
+
+    <!-- TODO -->
+    <!-- Used with https_port and tcp_ssl_port. Full ssl options list: https://github.com/yandex/ClickHouse/blob/master/contrib/libpoco/NetSSL_OpenSSL/include/Poco/Net/SSLManager.h#L71 -->
+    <!--
+    <openSSL>
+        <server>
+            <certificateFile>/etc/clickhouse-server/server.crt</certificateFile>
+            <privateKeyFile>/etc/clickhouse-server/server.key</privateKeyFile>
+            <dhParamsFile>/etc/clickhouse-server/dhparam.pem</dhParamsFile>
+            <verificationMode>none</verificationMode>
+            <loadDefaultCAFile>true</loadDefaultCAFile>
+            <cacheSessions>true</cacheSessions>
+            <disableProtocols>sslv2,sslv3</disableProtocols>
+            <preferServerCiphers>true</preferServerCiphers>
+        </server>
+
+        <client>
+            <loadDefaultCAFile>true</loadDefaultCAFile>
+            <cacheSessions>true</cacheSessions>
+            <disableProtocols>sslv2,sslv3</disableProtocols>
+            <preferServerCiphers>true</preferServerCiphers>
+            <invalidCertificateHandler>
+                <name>RejectCertificateHandler</name>
+            </invalidCertificateHandler>
+        </client>
+    </openSSL>
+    -->
+
+{% if clickhouse_http_server_default_response |length > 0 %}
+
+    <!-- Default root page on http[s] server. For example load UI from https://tabix.io/ when opening http://localhost:8123 -->
+    <http_server_default_response></http_server_default_response>
+{% endif %}
+
+    <!-- Port for communication between replicas. Used for data exchange. -->
+    <interserver_http_port>{{ clickhouse_interserver_http_port }}</interserver_http_port>
+
+    <!-- Hostname that is used by other replicas to request this server.
+         If not specified, than it is determined analoguous to 'hostname -f' command.
+         This setting could be used to switch replication to another network interface.
+      -->
+
+    <interserver_http_host>{{ clickhouse_interserver_http_host }}</interserver_http_host>
+
+    <!-- Listen specified host. use :: (wildcard IPv6 address), if you want to accept connections both with IPv4 and IPv6 from everywhere. -->
+    <!-- <listen_host>::</listen_host> -->
+{% for host in clickhouse_listen_host %}
+    <listen_host>{{ host }}</listen_host>
+{% endfor %}
+
+    <max_connections>{{ clickhouse_max_connections }}</max_connections>
+    <keep_alive_timeout>{{ clickhouse_keep_alive_timeout }}</keep_alive_timeout>
+
+    <!-- Maximum number of concurrent queries. -->
+    <max_concurrent_queries>{{ clickhouse_max_concurrent_queries }}</max_concurrent_queries>
+
+    <!-- Set limit on number of open files (default: maximum). This setting makes sense on Mac OS X because getrlimit() fails to retrieve
+         correct maximum value. -->
+    <max_open_files>{{ clickhouse_max_open_files }}</max_open_files>
+
+    <!-- Size of cache of uncompressed blocks of data, used in tables of MergeTree family.
+         In bytes. Cache is single for server. Memory is allocated only on demand.
+         Cache is used when 'use_uncompressed_cache' user setting turned on (off by default).
+         Uncompressed cache is advantageous only for very short queries and in rare cases.
+      -->
+    <uncompressed_cache_size>{{ clickhouse_uncompressed_cache_size }}</uncompressed_cache_size>
+
+    <!-- Approximate size of mark cache, used in tables of MergeTree family.
+         In bytes. Cache is single for server. Memory is allocated only on demand.
+         You should not lower this value.
+      -->
+    <mark_cache_size>{{ clickhouse_mark_cache_size }}</mark_cache_size>
+
+    <!-- Path to data directory, with trailing slash. -->
+    <path>{{ clickhouse_path }}</path>
+
+    <!-- Path to temporary data for processing hard queries. -->
+    <tmp_path>{{ clickhouse_tmp_path }}</tmp_path>
+
+    <!-- Path to configuration file with users, access rights, profiles of settings, quotas. -->
+    <users_config>{{ clickhouse_users_config }}</users_config>
+
+    <!-- Default profile of settings.. -->
+    <default_profile>{{ clickhouse_default_profile }}</default_profile>
+
+    <!-- Default database. -->
+    <default_database>{{ clickhouse_default_database }}</default_database>
+
+    <!-- Server time zone could be set here.
+
+         Time zone is used when converting between String and DateTime types,
+          when printing DateTime in text formats and parsing DateTime from text,
+          it is used in date and time related functions, if specific time zone was not passed as an argument.
+
+         Time zone is specified as identifier from IANA time zone database, like UTC or Africa/Abidjan.
+         If not specified, system time zone at server startup is used.
+
+         Please note, that server could display time zone alias instead of specified name.
+         Example: W-SU is an alias for Europe/Moscow and Zulu is an alias for UTC.
+    -->
+    <timezone>{{ clickhouse_timezone }}</timezone>
+
+    <!-- You can specify umask here (see "man umask"). Server will apply it on startup.
+         Number is always parsed as octal. Default umask is 027 (other users cannot read logs, data files, etc; group can only read).
+    -->
+    <umask>{{ clickhouse_umask }}</umask>
+
+    <!-- TODO -->
+    <!-- Configuration of clusters that could be used in Distributed tables.
+         https://clickhouse.yandex/reference_en.html#Distributed
+      -->
+    <!--
+    <remote_servers incl="clickhouse_remote_servers" >
+        <test_shard_localhost>
+            <shard>
+                <replica>
+                    <host>localhost</host>
+                    <port>9000</port>
+                </replica>
+            </shard>
+        </test_shard_localhost>
+    </remote_servers>
+      -->
+
+    <!-- If element has 'incl' attribute, then for it's value will be used corresponding substitution from another file.
+         By default, path to file with substitutions is /etc/metrika.xml. It could be changed in config in 'include_from' element.
+         Values for substitutions are specified in /yandex/name_of_substitution elements in that file.
+      -->
+
+    <!-- TODO -->
+    <!-- ZooKeeper is used to store metadata about replicas, when using Replicated tables.
+         Optional. If you don't use replicated tables, you could omit that.
+
+         See https://clickhouse.yandex/reference_en.html#Data%20replication
+      -->
+    <!--
+    <zookeeper incl="zookeeper-servers" optional="true" />
+      -->
+
+    <!-- TODO -->
+    <!-- Substitutions for parameters of replicated tables.
+          Optional. If you don't use replicated tables, you could omit that.
+
+         See https://clickhouse.yandex/reference_en.html#Creating%20replicated%20tables
+      -->
+    <!--
+    <macros incl="macros" optional="true" />
+      -->
+
+    <!-- Maximum session timeout, in seconds. Default: 3600. -->
+    <max_session_timeout>{{ clickhouse_max_session_timeout }}</max_session_timeout>
+
+    <!-- Default session timeout, in seconds. Default: 60. -->
+    <default_session_timeout>{{ clickhouse_default_session_timeout }}</default_session_timeout>
+
+    <!-- Sending data to Graphite for monitoring. Several sections can be defined. -->
+    <!--
+        interval - send every X second
+        root_path - prefix for keys
+        metrics - send data from table system.metrics
+        events - send data from table system.events
+        asynchronous_metrics - send data from table system.asynchronous_metrics
+    -->
+{% if clickhouse_graphite |length > 0 %}
+
+    {% for item in clickhouse_graphite %}
+    <graphite>
+        <host>{{ item.host }}</host>
+        <port>{{ item.port }}</port>
+        <timeout>{{ item.timeout }}</timeout>
+        <interval>{{ item.interval }}</interval>
+        <root_path>{{ item.root_path }}</root_path>
+
+        <metrics>{{ item.metrics }}</metrics>
+        <events>{{ item.events }}</events>
+        <asynchronous_metrics>{{ item.asynchronous_metrics }}</asynchronous_metrics>
+    </graphite>
+    {% endfor %}
+{% endif %}
+
+{% if clickhouse_query_log |length > 0 %}
+
+    <!-- Query log. Used only for queries with setting log_queries = 1. -->
+    <query_log>
+        <!-- What table to insert data. If table is not exist, it will be created.
+             When query log structure is changed after system update,
+              then old table will be renamed and new table will be created automatically.
+        -->
+        <database>{{ clickhouse_query_log.database }}</database>
+        <table>{{ clickhouse_query_log.table }}</table>
+
+        <!-- Interval of flushing data. -->
+        <flush_interval_milliseconds>{{ clickhouse_query_log.flush_interval_milliseconds }}</flush_interval_milliseconds>
+    </query_log>
+{% endif %}
+{% if clickhouse_part_log |length > 0 %}
+
+    <part_log>
+        <database>{{ clickhouse_part_log.database }}</database>
+        <table>{{ clickhouse_part_log.table }}</table>
+
+        <flush_interval_milliseconds>{{ clickhouse_part_log.flush_interval_milliseconds }}</flush_interval_milliseconds>
+    </part_log>
+{% endif %}
+{% if clickhouse_internal_dictionaries |length > 0 %}
+
+    <!-- Parameters for embedded dictionaries, used in Yandex.Metrica.
+         See https://clickhouse.yandex/reference_en.html#Internal%20dictionaries
+    -->
+    <!-- Reloading interval for embedded dictionaries, in seconds. Default: 3600. -->
+    <builtin_dictionaries_reload_interval>{{ clickhouse_internal_dictionaries.reload_interval }}</builtin_dictionaries_reload_interval>
+
+    <!-- Path to file with region hierarchy. -->
+    <path_to_regions_hierarchy_file>{{ clickhouse_internal_dictionaries.path_to_regions_hierarchy_file }}</path_to_regions_hierarchy_file>
+
+    <!-- Path to directory with files containing names of regions -->
+    <path_to_regions_names_files>{{ clickhouse_internal_dictionaries.path_to_regions_names_files }}</path_to_regions_names_files>
+{% endif %}
+{% if clickhouse_external_dictionaries |length > 0 %}
+
+    <!-- Configuration of external dictionaries. See:
+         https://clickhouse.yandex/reference_en.html#External%20Dictionaries
+    -->
+    <dictionaries_config>{{ clickhouse_external_dictionaries.config }}</dictionaries_config>
+
+    <!-- Dictionaries can be created when starting the server, or at first use. 
+         If set to ‘true’, each dictionary is created at first use. 
+         If dictionary creation failed, the function that was using the dictionary throws an exception. 
+         If ‘false’, all dictionaries are created when the server starts, and if there is an error, the server shuts down.
+    -->
+    <dictionaries_lazy_load>{{ clickhouse_external_dictionaries.lazy_load }}</dictionaries_lazy_load>
+{% endif %}
+{% if clickhouse_compression |length > 0 %}
+
+    <compression incl="{{ clickhouse_compression.incl.name }}"{% if clickhouse_compression.incl.optional %} optional="true"{% endif %}>
+    {% if clickhouse_compression.case |length > 0 %}
+        <!-- Set of variants. Checked in order. Last matching case wins. If nothing matches, lz4 will be used. -->
+    {% for case in clickhouse_compression.case %}
+        <case>
+            <!-- Conditions. All must be satisfied. Some conditions may be omitted. -->
+            <min_part_size>{{ case.min_part_size }}</min_part_size>        <!-- Min part size in bytes. -->
+            <min_part_size_ratio>{{ case.min_part_size_ratio }}</min_part_size_ratio>    <!-- Min size of part relative to whole table size. -->
+
+            <!-- What compression method to use. -->
+            <method>{{ case.method }}</method>    <!-- Keep in mind that zstd compression library is highly experimental. -->
+        </case>
+    {% endfor %}
+    {% endif %}
+    </compression>
+{% endif %}    
+
+    <resharding>
+        <task_queue_path>{{ clickhouse_resharding.task_queue_path }}</task_queue_path>
+    </resharding>
+
+    <!-- Allow to execute distributed DDL queries (CREATE, DROP, ALTER, RENAME) on cluster.
+         Works only if ZooKeeper is enabled. Comment it if such functionality isn't required. -->
+    <distributed_ddl>
+        <!-- Path in ZooKeeper to queue with DDL queries -->
+        <path>{{ clickhouse_distributed_ddl.path }}</path>
+    </distributed_ddl>
+{% if clickhouse_merge_tree |length > 0 %}
+
+    <!-- Settings to fine tune MergeTree tables. See documentation in source code, in MergeTreeSettings.h -->
+    <merge_tree>
+    {% for setting in clickhouse_merge_tree %}
+        <{{ setting.name }}>{{ setting.value }}</{{ setting.name }}>
+    {% endfor %}
+    </merge_tree>
+{% endif %}
+
+    <!-- Protection from accidental DROP.
+         If size of a MergeTree table is greater than max_table_size_to_drop (in bytes) than table could not be dropped with any DROP query.
+         If you want do delete one table and don't want to restart clickhouse-server, you could create special file <clickhouse-path>/flags/force_drop_table and make DROP once.
+         By default max_table_size_to_drop is 50GB, max_table_size_to_drop=0 allows to DROP any tables.
+         Uncomment to disable protection.
+    -->
+    <max_table_size_to_drop>{{ clickhouse_max_table_size_to_drop }}</max_table_size_to_drop>
+
+    <!-- TODO -->
+    <!-- Example of parameters for GraphiteMergeTree table engine -->
+    <!--
+    <graphite_rollup_example>
+        <pattern>
+            <regexp>click_cost</regexp>
+            <function>any</function>
+            <retention>
+                <age>0</age>
+                <precision>3600</precision>
+            </retention>
+            <retention>
+                <age>86400</age>
+                <precision>60</precision>
+            </retention>
+        </pattern>
+        <default>
+            <function>max</function>
+            <retention>
+                <age>0</age>
+                <precision>60</precision>
+            </retention>
+            <retention>
+                <age>3600</age>
+                <precision>300</precision>
+            </retention>
+            <retention>
+                <age>86400</age>
+                <precision>3600</precision>
+            </retention>
+        </default>
+    </graphite_rollup_example>
+    -->
+</yandex>
