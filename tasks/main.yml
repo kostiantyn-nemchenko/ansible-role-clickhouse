@@ -11,8 +11,6 @@
   tags:
     - clickhouse
     - clickhouse-install
-    - clickhouse-configure
-    - clickhouse-users
     - clickhouse-databases
 
 - import_tasks: configuration.yml
