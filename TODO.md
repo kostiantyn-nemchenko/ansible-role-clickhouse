@@ -1,10 +1,10 @@
 Upcoming Features
 ------------------
 
-#### Users management:
+#### Users management
    - [ ] Create users with encrypted passwords (_password_sha256_hex_ config setting).
 
-#### Databases management:
+#### Databases management
    - [ ] Specify cluster name for [distributed](https://clickhouse.yandex/docs/en/single/#distributed-ddl-queries-on-cluster-section) database creating/deleting.
 
 #### Server configuration
