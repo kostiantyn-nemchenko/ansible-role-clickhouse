@@ -4,7 +4,7 @@
 - name: Manage ClickHouse users and privileges
   template: 
     src: users.xml.j2
-    dest: "{{ clickhouse_server_config_dir }}/users.xml"
+    dest: "{{ clickhouse_server_config_path }}/{{ clickhouse_users_config }}"
     owner: "{{ clickhouse_system_user }}"
     group: "{{ clickhouse_system_group }}"
     mode: 0644
