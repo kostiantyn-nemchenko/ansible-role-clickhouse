@@ -1,0 +1,5 @@
+---
+- hosts: clickhouse
+  become: yes
+  roles:
+    - ../../clickhouse
