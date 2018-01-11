@@ -1,6 +1,16 @@
 ---
 # file: clickhouse/tasks/configuration.yml
 
+- name: Ensure ClickHouse directories
+  file:
+    path: "{{ item.path }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+    state: directory
+  with_items:
+    - "{{ clickhouse_directories }}"
+
 - name: Manage ClickHouse configuration
   template: 
     src: config.xml.j2

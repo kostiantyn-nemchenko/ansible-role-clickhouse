@@ -14,6 +14,12 @@ clickhouse_apt_packages:
 clickhouse_system_user:  clickhouse
 clickhouse_system_group: clickhouse
 
+clickhouse_directories:
+  - { path: "{{ clickhouse_server_config_path }}", owner: "{{ clickhouse_system_user }}", group: "{{ clickhouse_system_group }}", mode: "0755" }
+  - { path: "{{ clickhouse_path }}",               owner: "{{ clickhouse_system_user }}", group: "{{ clickhouse_system_group }}", mode: "0700" }
+  - { path: "{{ clickhouse_tmp_path }}",           owner: "{{ clickhouse_system_user }}", group: "{{ clickhouse_system_group }}", mode: "0777" }
+  - { path: "{{ clickhouse_log_path }}",           owner: "{{ clickhouse_system_user }}", group: "{{ clickhouse_system_group }}", mode: "0775" }
+
 clickhouse_host: localhost
 clickhouse_default_user: default
 clickhouse_default_password: ""
