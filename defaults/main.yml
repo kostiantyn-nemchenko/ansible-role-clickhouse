@@ -18,7 +18,7 @@ clickhouse_host: localhost
 clickhouse_default_user: default
 clickhouse_default_password: ""
 clickhouse_server_config_path: /etc/clickhouse-server
-clickhouse_log_dir: /var/log/clickhouse-server
+clickhouse_log_path: /var/log/clickhouse-server
 
 clickhouse_databases: []
 #  - { name: "example1", state: "absent"  }
@@ -66,8 +66,8 @@ clickhouse_quotas:
 
 clickhouse_logger:
   level: trace
-  log: "{{ clickhouse_log_dir }}/clickhouse-server.log"
-  errorlog: "{{ clickhouse_log_dir }}/clickhouse-server.err.log"
+  log: "{{ clickhouse_log_path }}/clickhouse-server.log"
+  errorlog: "{{ clickhouse_log_path }}/clickhouse-server.err.log"
   size: 1000M
   count: 10
 
