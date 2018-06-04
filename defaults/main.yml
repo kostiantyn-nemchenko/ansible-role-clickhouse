@@ -3,7 +3,7 @@
 
 clickhouse_apt_key_id: E0C56BD4
 clickhouse_apt_key_url: http://repo.yandex.ru/clickhouse/CLICKHOUSE-KEY.GPG
-clickhouse_apt_repository: "deb http://repo.yandex.ru/clickhouse/{{ ansible_distribution_release }} stable main"
+clickhouse_apt_repository: "deb http://repo.yandex.ru/clickhouse/deb/stable main/"
 clickhouse_apt_packages:
   - { pkg: "clickhouse-client",        state: "present" }
   - { pkg: "clickhouse-server-common", state: "present" }
