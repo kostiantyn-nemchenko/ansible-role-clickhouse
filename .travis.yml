@@ -14,11 +14,10 @@ before_install:
     set -e
     docker run -d -v "${PWD}":/tmp/clickhouse --name="${DISTRIBUTION}-${DISTRIBUTION_VERSION}" --privileged ${DISTRIBUTION}:${DISTRIBUTION_VERSION} ${DOCKER_INIT}
     sleep 3
-    docker exec -t ${DISTRIBUTION}-${DISTRIBUTION_VERSION} /bin/sh -c "apt-get -qq update && apt-get -qq install apt-utils -y"
+    docker exec -t ${DISTRIBUTION}-${DISTRIBUTION_VERSION} /bin/sh -c "apt-get -qq update && apt-get -qq install dialog apt-utils -y > /dev/null"
 install:
-  - docker exec -t ${DISTRIBUTION}-${DISTRIBUTION_VERSION} /bin/sh -c "apt-get -qq install sudo python-pip git -y > /dev/null && pip install --upgrade pip setuptools -q && pip install ansible==${ANSIBLE_VERSION} -q"
+  - docker exec -t ${DISTRIBUTION}-${DISTRIBUTION_VERSION} /bin/sh -c "apt-get -qq install sudo python-pip git -y > /dev/null && pip install --upgrade setuptools ansible==${ANSIBLE_VERSION} -q"
   - docker exec -t ${DISTRIBUTION}-${DISTRIBUTION_VERSION} /bin/sh -c "ansible --version"
-
 script:
   - docker exec -t ${DISTRIBUTION}-${DISTRIBUTION_VERSION} /bin/sh -c "ansible-playbook -i /tmp/clickhouse/tests/inventory /tmp/clickhouse/tests/test.yml --syntax-check"
   - docker exec -t ${DISTRIBUTION}-${DISTRIBUTION_VERSION} /bin/sh -c "ansible-playbook -i /tmp/clickhouse/tests/inventory /tmp/clickhouse/tests/test.yml -Dvv"
