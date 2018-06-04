@@ -49,7 +49,7 @@
 {% if clickhouse_http_server_default_response |length > 0 %}
 
     <!-- Default root page on http[s] server. For example load UI from https://tabix.io/ when opening http://localhost:8123 -->
-    <http_server_default_response></http_server_default_response>
+    <http_server_default_response>{{ clickhouse_http_server_default_response }}</http_server_default_response>
 {% endif %}
 
     <!-- Port for communication between replicas. Used for data exchange. -->
